@@ -1,0 +1,24 @@
+{
+  "name": "jsbuilder",
+  "version": "1.0.0",
+  "description": "JS Sites Constructor",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abagiel/JSBuilder.git"
+  },
+  "keywords": [
+    "js",
+    "javascript",
+    "constructor"
+  ],
+  "author": "Abagiel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Abagiel/JSBuilder/issues"
+  },
+  "homepage": "https://github.com/Abagiel/JSBuilder#readme"
+}
