@@ -1,5 +1,5 @@
 import { CreateBlock } from './Blocks.js';
-import { form, inputForm } from './utils.js';
+import { form } from './utils.js';
 
 export default class Sidebar {
 	constructor(root, updateFn) {
@@ -9,50 +9,55 @@ export default class Sidebar {
 	}
 
 	init() {
-		this.root.insertAdjacentHTML('beforeend', form(this.type));
 		this.root.addEventListener('change', this.select.bind(this));
-		this.root.addEventListener('click', this.add.bind(this));
+		this.root.addEventListener('submit', this.add.bind(this));
+		this.renderForm();
+	}
+
+	renderForm() {
+		this.root.innerHTML = '';
+		this.root.insertAdjacentHTML('beforeend', form(this.type));
 	}
 
 	select(e) {
-		const el = e.target;
-
-		if (el.dataset.type === 'file') {
-			const reader = new FileReader();
-			reader.onload = (ev) => {
-				const newBlock = new CreateBlock('img', ev.target.result, {
-					id: Date.now().toString(),
-					styles: {
-						height: 'auto',
-						width: '400px'
-					}
-				});
-				this.update(newBlock);
-			}
-			reader.readAsDataURL(e.target.files[0]);
-			return;
-		}
-		if (el.dataset.type === 'select') {
+		if (e.target.dataset.type === 'select') {
 			this.type = e.target.value;
+			this.renderForm();
 		}
-
-		this.root.innerHTML = '';
-		this.root.insertAdjacentHTML('beforeend', form(this.type));
-		this.root.insertAdjacentHTML('beforeend', inputForm(this.type));
 	}
 
 	add(e) {
-		if (!e.target.dataset.btn) return;
+		e.preventDefault();
+ 
+		if (this.type === 'img') {
+			const data = e.target[0].files[0];
+			const styles = e.target[1].value;
+			const reader = new FileReader();
 
-		const newBlock = new CreateBlock('block', 'p', {
-			id: Date.now().toString(),
-			styles: {
-				background: 'tomato',
-				height: '20px',
-				width: '50px'
+			reader.onload = (ev) => {
+				const newBlock = new CreateBlock('img', ev.target.result, {
+					id: Date.now().toString(),
+					styles
+				});
+				this.update(newBlock);
+				this.renderForm();
 			}
+
+			reader.readAsDataURL(data);
+			return;
+		}
+
+		const tag = e.target[0].value;
+		const data = e.target[1].value;
+		const styles = e.target[2].value;
+
+		const newBlock = new CreateBlock(this.type, tag, {
+			content: data,
+			id: Date.now().toString(),
+			styles
 		});
 
 		this.update(newBlock);
+		this.renderForm();
 	}
 }

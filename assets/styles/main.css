@@ -1,12 +1,12 @@
 body {
 	margin: 0;
+	max-width: 100vw;
 	padding: 0;
+
+	overflow-x: hidden;
 }
 
 .container {
-	height: 100vw;
-	width: 100vw;
-
 	display: grid;
 	grid-template-columns: 1fr 300px;
 }
@@ -16,5 +16,62 @@ body {
 }
 
 .sidebar {
+	display: flex;
+	flex-direction: column;
+	gap: 30px;
+	height: 100%;
+	padding: 20px 10px;
+
 	box-shadow: -2px 0 5px hsla(0, 0%, 0%, 0.1);
+}
+
+select[data-type='select'] {
+	height: 40px;
+
+	border: 2px solid hsl(0 0% 80%);
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 18px;
+	text-align: center;
+}
+
+form[data-type='form'] {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+form[data-type='form'] input,
+form[data-type='form'] textarea {
+	padding: 5px 10px;
+
+	border: 2px solid hsl(0 0% 80%);
+	border-radius: 5px;
+	font-family: inherit;
+	font-size: 18px;
+	text-transform: lowercase;
+}
+form[data-type='form'] input::placeholder,
+form[data-type='form'] textarea::placeholder {
+	text-transform: capitalize;
+}
+
+input[data-type='content'] {
+	text-transform: none !important;
+}
+
+button[data-type='btn'] {
+	padding: 10px 20px;
+
+	background: #fff;
+	border: 2px solid hsl(140 50% 40%);
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 20px;
+	text-transform: uppercase;
+	transition: background .3s, color .3s;
+}
+button[data-type='btn']:hover {
+	background: hsl(140 50% 40%);
+	color: #fff;
 }
