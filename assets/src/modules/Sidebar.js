@@ -1,19 +1,44 @@
 import { CreateBlock } from './Blocks.js';
+import { form, inputForm } from './utils.js';
 
 export default class Sidebar {
 	constructor(root, updateFn) {
 		this.root = document.querySelector(root);
 		this.update = updateFn;
+		this.type = 'block';
 	}
 
 	init() {
-
-		this.root.insertAdjacentHTML('beforeend', this.template);
+		this.root.insertAdjacentHTML('beforeend', form(this.type));
+		this.root.addEventListener('change', this.select.bind(this));
 		this.root.addEventListener('click', this.add.bind(this));
 	}
 
-	get template() {
-		return '<button data-btn="true">Add paragraph</button>'
+	select(e) {
+		const el = e.target;
+
+		if (el.dataset.type === 'file') {
+			const reader = new FileReader();
+			reader.onload = (ev) => {
+				const newBlock = new CreateBlock('img', ev.target.result, {
+					id: Date.now().toString(),
+					styles: {
+						height: 'auto',
+						width: '400px'
+					}
+				});
+				this.update(newBlock);
+			}
+			reader.readAsDataURL(e.target.files[0]);
+			return;
+		}
+		if (el.dataset.type === 'select') {
+			this.type = e.target.value;
+		}
+
+		this.root.innerHTML = '';
+		this.root.insertAdjacentHTML('beforeend', form(this.type));
+		this.root.insertAdjacentHTML('beforeend', inputForm(this.type));
 	}
 
 	add(e) {
