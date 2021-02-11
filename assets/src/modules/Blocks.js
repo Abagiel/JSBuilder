@@ -11,20 +11,22 @@ class Block {
 	}
 }
 
-export class SimpleBlock extends Block {
+class SimpleBlock extends Block {
 	constructor(tag, options) {
 		super(tag, options);
 	}
 
 	toHTML() {
-		const { content = '', styles } = this.options;
+		const { content = '', styles, id = '' } = this.options;
 		const css = toCSS(styles);
 
-		return `<${this.tag} style="${css}">${content}</${this.tag}>`
+		return `<${this.tag} 
+			data-del="${id}" 
+			style="${css}">${content}</${this.tag}>`
 	}
 }
 
-export class ImgBlock extends Block {
+class ImgBlock extends Block {
 	constructor(url, options) {
 		super('img', options);
 
@@ -32,9 +34,27 @@ export class ImgBlock extends Block {
 	}
 
 	toHTML() {
-		const { styles, alt = '' } = this.options;
+		const { styles, alt = '', id = '' } = this.options;
 		const css = toCSS(styles);
 
-		return `<img src="${this.url}" alt="${alt}" style="${css}">`
+		return `
+			<img 
+				data-del="${id}" 
+				src="${this.url}"
+				alt="${alt}" 
+				style="${css}">`
 	}
+}
+
+export class CreateBlock {
+	constructor(type, data, options) {
+		this.block = type === 'block'
+			? new SimpleBlock(data, options)
+			: new ImgBlock(data, options);
+	}
+
+	toHTML() {
+		return this.block.toHTML();
+	}
+	
 }

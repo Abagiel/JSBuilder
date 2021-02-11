@@ -1,4 +1,4 @@
-import { SimpleBlock } from './Blocks.js';
+import { CreateBlock } from './Blocks.js';
 
 export default class Sidebar {
 	constructor(root, updateFn) {
@@ -19,8 +19,13 @@ export default class Sidebar {
 	add(e) {
 		if (!e.target.dataset.btn) return;
 
-		const newBlock = new SimpleBlock('p', {
-			content: Date.now()
+		const newBlock = new CreateBlock('block', 'p', {
+			id: Date.now().toString(),
+			styles: {
+				background: 'tomato',
+				height: '20px',
+				width: '50px'
+			}
 		});
 
 		this.update(newBlock);
