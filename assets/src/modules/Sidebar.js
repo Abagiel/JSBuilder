@@ -2,21 +2,27 @@ import { CreateBlock } from './Blocks.js';
 import { form } from './utils.js';
 
 export default class Sidebar {
-	constructor(root, updateFn) {
+	constructor(root, updateFn, model) {
 		this.root = document.querySelector(root);
 		this.update = updateFn;
+		this.model = model;
+
 		this.type = 'block';
+		this.selectedEl = null;
 	}
 
 	init() {
 		this.root.addEventListener('change', this.select.bind(this));
 		this.root.addEventListener('submit', this.add.bind(this));
+		this.root.addEventListener('click', this.remove.bind(this));
+
 		this.renderForm();
 	}
 
-	renderForm() {
+	renderForm(edit, el = null) {
 		this.root.innerHTML = '';
-		this.root.insertAdjacentHTML('beforeend', form(this.type));
+		this.root.insertAdjacentHTML('beforeend', form(this.type, edit));
+		this.selectedEl = el;
 	}
 
 	select(e) {
@@ -59,5 +65,13 @@ export default class Sidebar {
 
 		this.update(newBlock);
 		this.renderForm();
+	}
+
+	remove(e) {
+		if (e.target.dataset.type === 'btn-del') {
+			this.model = this.model.filter(({block}) => block.options.id !== this.selectedEl.dataset.del);
+			this.selectedEl.remove();
+
+		}
 	}
 }

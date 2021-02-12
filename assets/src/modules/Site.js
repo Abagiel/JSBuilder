@@ -6,7 +6,7 @@ export default class Site {
 	}
 
 	init() {
-		this.root.addEventListener('click', this.removeElement.bind(this));
+		this.root.addEventListener('click', this.editElement.bind(this));
 	}
 
 	render(model) {
@@ -22,16 +22,18 @@ export default class Site {
 		}
 	}
 
-	removeElement(e) {
+	editElement(e) {
 		const el = e.target;
 		const id = el.dataset.del;
 
 		if (id) {
-			this.model = this.model
-			  .filter(({block}) => block.options.id !== id);
-			el.remove();
+			this.sidebar.renderForm(true, el);
 		}
 	}
+
+	registerDep(name, dep) {
+		this[name] = dep;
+	}	
 
 	clear() {
 		this.root.innerHTML = '';

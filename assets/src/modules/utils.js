@@ -7,7 +7,7 @@ export function toCSS(obj = {}) {
 		.join(';')
 }
 
-export function form(type) {
+export function form(type, edit = false) {
 	const editForm = type === 'img' ? imgForm() : simpleForm();
 
 	return `
@@ -18,9 +18,10 @@ export function form(type) {
 
 		<form data-type="form" >
 			${editForm}
-			<textarea data-type="textarea" placeholder="styles" required></textarea>
+			<textarea data-type="textarea" placeholder="styles"></textarea>
 			<button data-type="btn" >Add</button>
-		<form>
+		</form>
+		${edit ? '<button data-type="btn-del" >Delete</button>' : ''}
 	`
 }
 
