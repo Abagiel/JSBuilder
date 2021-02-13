@@ -15,8 +15,15 @@ export default class Site {
 			this.root.insertAdjacentHTML('beforeend', el.toHTML());
 		});
 
-		return (data) => {
-			this.model.push(data);
+		return (data, type, idx) => {
+			if (type === 'mod') {
+				this.model = this.model.map((el) => el.block.options.id === idx ? data : el);
+			} else if (type === 'del') {
+				this.model = this.model.filter(({block}) => block.options.id !== idx);
+			} else {
+				this.model.push(data);
+			}
+			console.log(this.model);
 			this.clear();
 			this.render(this.model);
 		}

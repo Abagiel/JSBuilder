@@ -20,9 +20,9 @@ export default class Sidebar {
 	}
 
 	renderForm(edit, el = null) {
-		this.root.innerHTML = '';
-		this.root.insertAdjacentHTML('beforeend', form(this.type, edit));
 		this.selectedEl = el;
+		this.root.innerHTML = '';
+		this.root.insertAdjacentHTML('beforeend', form(this.type, edit, this.selectedEl));
 	}
 
 	select(e) {
@@ -35,7 +35,7 @@ export default class Sidebar {
 	add(e) {
 		e.preventDefault();
  
-		if (this.type === 'img') {
+		if (this.type === 'img' && !(e.target.dataset.type === 'form-change')) {
 			const data = e.target[0].files[0];
 			const styles = e.target[1].value;
 			const reader = new FileReader();
@@ -63,15 +63,46 @@ export default class Sidebar {
 			styles
 		});
 
+		if (this.type === 'img' && e.target.dataset.type === 'form-change') {
+			const data = e.target[0].files[0] || new Blob();
+			const styles = e.target[1].value;
+			const reader = new FileReader();
+
+			reader.onload = (ev) => {
+				const src = ev.target.result.includes('data:image') ? ev.target.result : this.selectedEl.src;
+				const newBlock = new CreateBlock('img', src, {
+					id: Date.now().toString(),
+					styles
+				});
+				this.update(newBlock, 'mod', this.selectedEl.dataset.del);
+			this.selectedEl = null;
+			this.edit = false;
+			this.renderForm();
+			}
+
+			reader.readAsDataURL(data);
+			return;
+		}
+
+		if (e.target.dataset.type === 'form-change') {
+			this.update(newBlock, 'mod', this.selectedEl.dataset.del);
+			this.selectedEl = null;
+			this.edit = false;
+			this.renderForm();
+			return;
+		}
+
 		this.update(newBlock);
 		this.renderForm();
 	}
 
 	remove(e) {
 		if (e.target.dataset.type === 'btn-del') {
-			this.model = this.model.filter(({block}) => block.options.id !== this.selectedEl.dataset.del);
+			this.update(null, 'del', this.selectedEl.dataset.del);
 			this.selectedEl.remove();
-
+			this.edit = false;
+			this.selectedEl = null;
+			this.renderForm();
 		}
 	}
 }

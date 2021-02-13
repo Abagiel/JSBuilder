@@ -36,14 +36,14 @@ select[data-type='select'] {
 	text-align: center;
 }
 
-form[data-type='form'] {
+form {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
 }
 
-form[data-type='form'] input,
-form[data-type='form'] textarea {
+form input,
+form textarea {
 	padding: 5px 10px;
 
 	border: 2px solid hsl(0 0% 80%);
@@ -52,8 +52,8 @@ form[data-type='form'] textarea {
 	font-size: 18px;
 	text-transform: lowercase;
 }
-form[data-type='form'] input::placeholder,
-form[data-type='form'] textarea::placeholder {
+form input::placeholder,
+form textarea::placeholder {
 	text-transform: capitalize;
 }
 
