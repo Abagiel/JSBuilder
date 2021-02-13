@@ -8,33 +8,19 @@ export function toCSS(obj = {}) {
 }
 
 function selectForm(type, edit) {
+	const blockS = type === 'block' ? 'selected' : '';
+	const imgS = type === 'img' ? 'selected' : '';
+
 	return !edit ? `
 		<select data-type="select" >
-			<option value="block" ${type === 'block' ? 'selected' : ''} >Block</option>
-			<option value="img" ${type === 'img' ? 'selected' : ''} >Image</option>
+			<option value="block" ${blockS} >Block</option>
+			<option value="img" ${imgS} >Image</option>
 		</select>
 	` : '';
 }
 
 function createBtn(content, datatype) {
-	return `<button data-type="${datatype}" >${content}</button>`
-}
-
-export function form(type, edit = false, el) {
-	const inputType = type === 'img' ? imgForm(edit) : simpleForm(el);
-	const value = el?.getAttribute('style') || '';
-	const formType = !edit ? 'form-add' : 'form-change';
-
-	return `
-		${selectForm(type, edit)}
-
-		<form data-type="${formType}" >
-			${inputType}
-			<textarea data-type="textarea" placeholder="styles">${value}</textarea>
-			${!edit ? createBtn('Add', 'btn') : createBtn('Change', 'btn')}
-		</form>
-		${edit ? createBtn('Delete', 'btn-del') : ''}
-	`
+	return `<button data-type="${datatype}">${content}</button>`
 }
 
 function simpleForm(el) {
@@ -48,5 +34,31 @@ function simpleForm(el) {
 }
 
 function imgForm(edit) {
-	return `<input data-type="file" type="file" "${!edit ? "required" : ''}" />`
+	const required = !edit ? "required" : '';
+
+	return `<input data-type="file" type="file" "${required}"/>`
+}
+
+function textarea(value) {
+	return `<textarea data-type="textarea" placeholder="styles">${value}</textarea>`
+}
+
+export function form(type, edit = false, el) {
+	const inputType = type === 'img' ? imgForm(edit) : simpleForm(el);
+	const value = el?.getAttribute('style') || '';
+	const formType = !edit ? 'form-add' : 'form-change';
+	const submitBtn = !edit ? createBtn('Add', 'btn') : createBtn('Change', 'btn'); 
+	const delBtn = edit ? createBtn('Delete', 'btn-del') : '';
+
+	return `
+		${selectForm(type, edit)}
+
+		<form data-type="${formType}" >
+			${inputType}
+			${textarea(value)}
+			${submitBtn}
+		</form>
+
+		${delBtn}
+	`
 }

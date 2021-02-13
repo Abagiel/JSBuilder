@@ -1,6 +1,7 @@
 export default class Site {
-	constructor(root) {
+	constructor(root, model) {
 		this.root = document.querySelector(root);
+		this.model = model;
 
 		this.init();
 	}
@@ -9,24 +10,15 @@ export default class Site {
 		this.root.addEventListener('click', this.editElement.bind(this));
 	}
 
-	render(model) {
-		this.model = model;
-		this.model.forEach(el => {
+	render() {
+		this.model.data.forEach(el => {
 			this.root.insertAdjacentHTML('beforeend', el.toHTML());
 		});
+	}
 
-		return (data, type, idx) => {
-			if (type === 'mod') {
-				this.model = this.model.map((el) => el.block.options.id === idx ? data : el);
-			} else if (type === 'del') {
-				this.model = this.model.filter(({block}) => block.options.id !== idx);
-			} else {
-				this.model.push(data);
-			}
-			console.log(this.model);
-			this.clear();
-			this.render(this.model);
-		}
+	rerender = () => {
+		this.clear();
+		this.render();
 	}
 
 	editElement(e) {

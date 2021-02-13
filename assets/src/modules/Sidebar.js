@@ -45,7 +45,8 @@ export default class Sidebar {
 					id: Date.now().toString(),
 					styles
 				});
-				this.update(newBlock);
+				this.model.add(newBlock);
+				this.update();
 				this.renderForm();
 			}
 
@@ -74,10 +75,11 @@ export default class Sidebar {
 					id: Date.now().toString(),
 					styles
 				});
-				this.update(newBlock, 'mod', this.selectedEl.dataset.del);
-			this.selectedEl = null;
-			this.edit = false;
-			this.renderForm();
+				this.model.replace(newBlock, this.selectedEl.dataset.del);
+				this.update()
+				this.selectedEl = null;
+				this.edit = false;
+				this.renderForm();
 			}
 
 			reader.readAsDataURL(data);
@@ -85,20 +87,23 @@ export default class Sidebar {
 		}
 
 		if (e.target.dataset.type === 'form-change') {
-			this.update(newBlock, 'mod', this.selectedEl.dataset.del);
+			this.model.replace(newBlock, this.selectedEl.dataset.del);
+			this.update();
 			this.selectedEl = null;
 			this.edit = false;
 			this.renderForm();
 			return;
 		}
 
-		this.update(newBlock);
+		this.model.add(newBlock);
+		this.update();
 		this.renderForm();
 	}
 
 	remove(e) {
 		if (e.target.dataset.type === 'btn-del') {
-			this.update(null, 'del', this.selectedEl.dataset.del);
+			this.model.remove(this.selectedEl.dataset.del);
+			this.update();
 			this.selectedEl.remove();
 			this.edit = false;
 			this.selectedEl = null;
