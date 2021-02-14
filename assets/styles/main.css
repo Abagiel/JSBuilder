@@ -61,7 +61,8 @@ input[data-type='content'] {
 	text-transform: none !important;
 }
 
-button[data-type='btn'] {
+button[data-type='btn'],
+button[data-type='btn-del'] {
 	padding: 10px 20px;
 
 	background: #fff;
@@ -75,4 +76,15 @@ button[data-type='btn'] {
 button[data-type='btn']:hover {
 	background: hsl(140 50% 40%);
 	color: #fff;
+}
+
+button[data-type='btn-del'] {
+	background: hsl(0 50% 50%);
+	border: 2px solid hsl(0 50% 40%);
+	color: #fff;
+	transition: background .3s, color .3s;
+}
+button[data-type='btn-del']:hover {
+	background: #fff;
+	color: hsl(0 50% 40%);
 }

@@ -7,11 +7,30 @@ export function toCSS(obj = {}) {
 		.join(';')
 }
 
+export function fromForm(e) {
+	const data = {};
+
+	Array.from(e.target.elements).forEach(el => {
+		if (el.dataset.type === 'file') {
+			data['file'] = el.files[0];
+			return;
+		}
+
+		if (el.tagName === 'INPUT' ||
+				el.tagName === 'TEXTAREA') {
+			data[el.dataset.type] = el.value;
+		}
+	})
+
+	return data;
+} 
+
 function selectForm(type, edit) {
 	const blockS = type === 'block' ? 'selected' : '';
 	const imgS = type === 'img' ? 'selected' : '';
 
-	return !edit ? `
+	return !edit 
+		? `
 		<select data-type="select" >
 			<option value="block" ${blockS} >Block</option>
 			<option value="img" ${imgS} >Image</option>
@@ -19,46 +38,72 @@ function selectForm(type, edit) {
 	` : '';
 }
 
-function createBtn(content, datatype) {
-	return `<button data-type="${datatype}">${content}</button>`
+function createBtn(content, type) {
+	return `<button data-type="${type}">${content}</button>`
+}
+
+function createInput(value, type, dataset, ph, req) {
+	const required = req ? 'required' : '';
+
+	return `<input 
+		value="${value}" 
+		type="${type}"
+		data-type="${dataset}" 
+		placeholder="${ph}"
+		${required} />`
 }
 
 function simpleForm(el) {
-	const value = el?.textContent ? el.textContent : '';
-	const tag = el?.tagName ? el.tagName.toLowerCase() : '';
+	let value = '', tag = '';
+
+	if (el) {
+		value = el.textContent;
+		tag = el.tagName.toLowerCase();
+	}
 
 	return `
-		<input value="${tag}" data-type="tag" type="text" placeholder="tag" required />
-		<input value="${value}" data-type="content" type="text" placeholder="content" required />
+		${createInput(tag, 'text', 'tag', 'tag', true)}
+		${createInput(value, 'text', 'content', 'content', true)}
 	`
 }
 
 function imgForm(edit) {
-	const required = !edit ? "required" : '';
-
-	return `<input data-type="file" type="file" "${required}"/>`
+	return createInput('', 'file', 'file', '', !edit)
 }
 
-function textarea(value) {
-	return `<textarea data-type="textarea" placeholder="styles">${value}</textarea>`
+function stylesField(value) {
+	return `<textarea data-type="styles" placeholder="styles">${value}</textarea>`
+}
+
+function getEditData(edit, el) {
+	let formType = 'form-add';
+	let submitBtn = createBtn('Add', 'btn');
+	let delBtn = '';
+	let styles = '';
+
+	if (edit) {
+		styles = el.getAttribute('style');
+		formType = 'form-change';
+		submitBtn = createBtn('Change', 'btn');
+		delBtn = createBtn('Delete', 'btn-del');
+	}
+
+	return { formType, submitBtn, delBtn, styles }
 }
 
 export function form(type, edit = false, el) {
 	const inputType = type === 'img' ? imgForm(edit) : simpleForm(el);
-	const value = el?.getAttribute('style') || '';
-	const formType = !edit ? 'form-add' : 'form-change';
-	const submitBtn = !edit ? createBtn('Add', 'btn') : createBtn('Change', 'btn'); 
-	const delBtn = edit ? createBtn('Delete', 'btn-del') : '';
+	const data = getEditData(edit, el);
 
 	return `
 		${selectForm(type, edit)}
 
-		<form data-type="${formType}" >
+		<form data-type="${data.formType}" >
 			${inputType}
-			${textarea(value)}
-			${submitBtn}
+			${stylesField(data.styles)}
+			${data.submitBtn}
 		</form>
 
-		${delBtn}
+		${data.delBtn}
 	`
 }

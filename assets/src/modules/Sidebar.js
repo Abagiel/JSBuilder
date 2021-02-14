@@ -1,14 +1,15 @@
 import { CreateBlock } from './Blocks.js';
-import { form } from './utils.js';
+import { form, fromForm } from './utils.js';
 
 export default class Sidebar {
-	constructor(root, updateFn, model) {
+	constructor(root, update, model) {
 		this.root = document.querySelector(root);
-		this.update = updateFn;
+		this.update = update;
 		this.model = model;
 
 		this.type = 'block';
 		this.selectedEl = null;
+		this.edit = false;
 	}
 
 	init() {
@@ -19,10 +20,19 @@ export default class Sidebar {
 		this.renderForm();
 	}
 
-	renderForm(edit, el = null) {
-		this.selectedEl = el;
+	renderForm(edit = false, el = null) {
+		this.editMode(edit, el);
+
 		this.root.innerHTML = '';
 		this.root.insertAdjacentHTML('beforeend', form(this.type, edit, this.selectedEl));
+	}
+
+	editMode(edit, el) {
+		if (el) {
+			this.type = el.tagName === 'IMG' ? 'img' : 'block';
+			this.selectedEl = el;
+			this.edit = edit;
+		}
 	}
 
 	select(e) {
@@ -34,80 +44,68 @@ export default class Sidebar {
 
 	add(e) {
 		e.preventDefault();
+
+		const data = fromForm(e);
+		const formType = e.target.dataset.type;
+		const newBlock = addSimpleBlock(data, this.type);
  
-		if (this.type === 'img' && !(e.target.dataset.type === 'form-change')) {
-			const data = e.target[0].files[0];
-			const styles = e.target[1].value;
-			const reader = new FileReader();
-
-			reader.onload = (ev) => {
-				const newBlock = new CreateBlock('img', ev.target.result, {
-					id: Date.now().toString(),
-					styles
-				});
-				this.model.add(newBlock);
-				this.update();
-				this.renderForm();
-			}
-
-			reader.readAsDataURL(data);
-			return;
-		}
-
-		const tag = e.target[0].value;
-		const data = e.target[1].value;
-		const styles = e.target[2].value;
-
-		const newBlock = new CreateBlock(this.type, tag, {
-			content: data,
-			id: Date.now().toString(),
-			styles
-		});
-
-		if (this.type === 'img' && e.target.dataset.type === 'form-change') {
-			const data = e.target[0].files[0] || new Blob();
-			const styles = e.target[1].value;
-			const reader = new FileReader();
-
-			reader.onload = (ev) => {
-				const src = ev.target.result.includes('data:image') ? ev.target.result : this.selectedEl.src;
-				const newBlock = new CreateBlock('img', src, {
-					id: Date.now().toString(),
-					styles
-				});
-				this.model.replace(newBlock, this.selectedEl.dataset.del);
-				this.update()
-				this.selectedEl = null;
-				this.edit = false;
-				this.renderForm();
-			}
-
-			reader.readAsDataURL(data);
-			return;
-		}
-
-		if (e.target.dataset.type === 'form-change') {
-			this.model.replace(newBlock, this.selectedEl.dataset.del);
+		if (this.type === 'img') {
+			addImgBlock(data, this);
+		} else if (formType === 'form-change') {
+			this.model.replace(newBlock, this.selectedEl.dataset.id);
+			this.closeEditForm();
 			this.update();
-			this.selectedEl = null;
-			this.edit = false;
+		} else {
+			this.model.add(newBlock);
+			this.update();
 			this.renderForm();
-			return;
 		}
-
-		this.model.add(newBlock);
-		this.update();
-		this.renderForm();
 	}
 
 	remove(e) {
 		if (e.target.dataset.type === 'btn-del') {
-			this.model.remove(this.selectedEl.dataset.del);
-			this.update();
+			this.model.remove(this.selectedEl.dataset.id);
 			this.selectedEl.remove();
-			this.edit = false;
-			this.selectedEl = null;
-			this.renderForm();
+			this.closeEditForm();
+			this.update();
 		}
 	}
+
+	closeEditForm() {
+		this.selectedEl = null;
+		this.edit = false;
+		this.renderForm();
+	}
+}
+
+function getImgUrl(e) {
+	return e.target.result.includes('data:image') ? true : false;
+}
+
+function addSimpleBlock(options, type) {
+	return new CreateBlock(type, options);
+}
+
+function addImgBlock(options, sb) {
+	const file = options.file || new Blob();
+	const reader = new FileReader();
+
+	reader.onload = (e) => {
+		delete options.file;
+		options['url'] = getImgUrl(e) ? e.target.result : sb.selectedEl.src;
+
+		const newBlock = new CreateBlock('img', options);
+
+		if (!sb.edit) {
+			sb.model.add(newBlock);
+			sb.renderForm();
+		} else {
+			sb.model.replace(newBlock, sb.selectedEl.dataset.id);
+			sb.closeEditForm();
+		}
+
+		sb.update();
+	}
+
+	reader.readAsDataURL(file);
 }

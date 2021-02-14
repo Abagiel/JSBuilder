@@ -23,7 +23,7 @@ export default class Site {
 
 	editElement(e) {
 		const el = e.target;
-		const id = el.dataset.del;
+		const id = el.dataset.id;
 
 		if (id) {
 			this.sidebar.renderForm(true, el);

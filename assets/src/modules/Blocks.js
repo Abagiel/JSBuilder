@@ -1,8 +1,7 @@
 import { toCSS } from './utils.js';
 
 class Block {
-	constructor(tag, options) {
-		this.tag = tag;
+	constructor(options) {
 		this.options = options;
 	}
 
@@ -12,45 +11,44 @@ class Block {
 }
 
 class SimpleBlock extends Block {
-	constructor(tag, options) {
-		super(tag, options);
+	constructor(options) {
+		super(options);
 	}
 
 	toHTML() {
-		const { content = '', styles, id = '' } = this.options;
+		const { content = '', styles, id, tag } = this.options;
 		const css = toCSS(styles);
 
-		return `<${this.tag} 
-			data-del="${id}" 
-			style="${css}">${content}</${this.tag}>`
+		return `<${tag} 
+			data-id="${id}" 
+			style="${css}">${content}</${tag}>`
 	}
 }
 
 class ImgBlock extends Block {
-	constructor(url, options) {
-		super('img', options);
-
-		this.url = url;
+	constructor(options) {
+		super({...options, tag: 'img'});
 	}
 
 	toHTML() {
-		const { styles, alt = '', id = '' } = this.options;
+		const { styles, alt = '', id, url } = this.options;
 		const css = toCSS(styles);
 
 		return `
 			<img 
-				data-del="${id}" 
-				src="${this.url}"
+				data-id="${id}" 
+				src="${url}"
 				alt="${alt}" 
 				style="${css}">`
 	}
 }
 
 export class CreateBlock {
-	constructor(type, data, options) {
+	constructor(type, options) {
+		this.options = { ...options, id: Date.now().toString() }
 		this.block = type === 'block'
-			? new SimpleBlock(data, options)
-			: new ImgBlock(data, options);
+			? new SimpleBlock(this.options)
+			: new ImgBlock(this.options);
 	}
 
 	toHTML() {
