@@ -94,6 +94,7 @@ function getEditData(edit, el) {
 export function form(type, edit = false, el) {
 	const inputType = type === 'img' ? imgForm(edit) : simpleForm(el);
 	const data = getEditData(edit, el);
+	const getHTMLBtn = createBtn('Get HTML', 'btn-html');
 
 	return `
 		${selectForm(type, edit)}
@@ -105,5 +106,6 @@ export function form(type, edit = false, el) {
 		</form>
 
 		${data.delBtn}
+		${getHTMLBtn}
 	`
 }

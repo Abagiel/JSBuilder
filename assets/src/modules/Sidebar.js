@@ -15,7 +15,7 @@ export default class Sidebar {
 	init() {
 		this.root.addEventListener('change', this.select.bind(this));
 		this.root.addEventListener('submit', this.add.bind(this));
-		this.root.addEventListener('click', this.remove.bind(this));
+		this.root.addEventListener('click', this.clickHandler.bind(this));
 
 		this.renderForm();
 	}
@@ -62,7 +62,13 @@ export default class Sidebar {
 		}
 	}
 
-	remove(e) {
+	clickHandler(e) {
+		if (e.target.dataset.type === 'btn-html') {
+			const container = document.querySelector('#result-html');
+			const html = document.querySelector('#site');
+			container.textContent = html.innerHTML;
+			navigator.clipboard.writeText(html.innerHTML);
+		}
 		if (e.target.dataset.type === 'btn-del') {
 			this.model.remove(this.selectedEl.dataset.id);
 			this.selectedEl.remove();
