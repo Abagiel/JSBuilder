@@ -54,34 +54,6 @@ body {
 	overflow-y: scroll;
 }
 
-.result-html {
-	position: fixed;
-	right: 0;
-
-	height: 15px;
-	width: 15px;
-
-	background: hsl(140 50% 40%);
-	border: 2px solid hsl(0 0% 80%);
-	border-radius: 50%;
-	color: transparent;
-	cursor: pointer;
-	overflow: hidden;
-	word-wrap: break-word;
-}
-.result-html:hover {
-	height: 100%;
-	padding: 20px;
-	width: 100%;
-
-	background: #fff;
-	border-radius: 0;
-	color: #000;
-	font-size: 21px;
-	overflow-y: scroll;
-	transition: height .3s, width .3s;
-}
-
 select[data-type='select'] {
 	height: 40px;
 
@@ -90,6 +62,10 @@ select[data-type='select'] {
 	cursor: pointer;
 	font-size: 18px;
 	text-align: center;
+	text-transform: capitalize;
+}
+select[data-type='select'] option {
+	text-transform: capitalize;
 }
 
 form {

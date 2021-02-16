@@ -1,5 +1,7 @@
 import { CreateBlock } from './Blocks.js';
-import { form, fromForm } from './utils.js';
+import { types, _DEFAULT } from './types.js';
+import { fromForm } from './utils.js';
+import { form } from './templates/form.js';
 
 export default class Sidebar {
 	constructor(root, update, model) {
@@ -7,9 +9,8 @@ export default class Sidebar {
 		this.update = update;
 		this.model = model;
 
-		this.type = 'block';
+		this.type = types[_DEFAULT];
 		this.selectedEl = null;
-		this.edit = false;
 	}
 
 	init() {
@@ -20,18 +21,17 @@ export default class Sidebar {
 		this.renderForm();
 	}
 
-	renderForm(edit = false, el = null) {
-		this.editMode(edit, el);
+	renderForm(el = null) {
+		this.editMode(el);
 
 		this.root.innerHTML = '';
-		this.root.insertAdjacentHTML('beforeend', form(this.type, edit, this.selectedEl));
+		this.root.insertAdjacentHTML('beforeend', form(this.type, this.selectedEl));
 	}
 
-	editMode(edit, el) {
+	editMode(el) {
 		if (el) {
-			this.type = el.tagName === 'IMG' ? 'img' : 'block';
+			this.type = types[el.tagName];
 			this.selectedEl = el;
-			this.edit = edit;
 		}
 	}
 
@@ -63,13 +63,13 @@ export default class Sidebar {
 	}
 
 	clickHandler(e) {
-		if (e.target.dataset.type === 'btn-html') {
-			const container = document.querySelector('#result-html');
-			const html = document.querySelector('#site');
-			container.textContent = html.innerHTML;
-			navigator.clipboard.writeText(html.innerHTML);
+		const type = e.target.dataset.type;
+
+		if (type === 'btn-html') {
+			copyHTML(e);
 		}
-		if (e.target.dataset.type === 'btn-del') {
+
+		if (type === 'btn-del') {
 			this.model.remove(this.selectedEl.dataset.id);
 			this.selectedEl.remove();
 			this.closeEditForm();
@@ -79,9 +79,18 @@ export default class Sidebar {
 
 	closeEditForm() {
 		this.selectedEl = null;
-		this.edit = false;
 		this.renderForm();
 	}
+}
+
+
+function copyHTML(e) {
+	const html = document.querySelector('#site').innerHTML;
+
+	e.target.textContent = 'Copied!';
+	navigator.clipboard.writeText(html);
+
+	setTimeout(() => e.target.textContent = 'Get HTML', 1000);
 }
 
 function getImgUrl(e) {
@@ -102,7 +111,7 @@ function addImgBlock(options, sb) {
 
 		const newBlock = new CreateBlock('img', options);
 
-		if (!sb.edit) {
+		if (!sb.selectedEl) {
 			sb.model.add(newBlock);
 			sb.renderForm();
 		} else {
