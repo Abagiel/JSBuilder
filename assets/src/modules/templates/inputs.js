@@ -1,7 +1,8 @@
-export function createInput(value, type, dataset, req) {
+export function createInput(value, type, dataset, req, ext = '') {
 	const required = req ? 'required' : '';
 
 	return `<input 
+		accept="${ext}"
 		value="${value}" 
 		type="${type}"
 		data-type="${dataset}" 

@@ -1,3 +1,5 @@
+import { IMAGE, VIDEO } from './types.js';
+
 export function toCSS(s = {}) {
 	if (typeof s === 'string') return s;
 
@@ -8,7 +10,8 @@ export function fromForm(e) {
 	const data = {};
 
 	Array.from(e.target.elements).forEach(el => {
-		if (el.dataset.type === 'file') {
+		if (el.dataset.type === IMAGE || 
+				el.dataset.type === VIDEO) {
 			data['file'] = el.files[0];
 			return;
 		}
@@ -20,4 +23,13 @@ export function fromForm(e) {
 	})
 
 	return data;
+}
+
+export function copyHTML(e) {
+	const html = document.querySelector('#site').innerHTML;
+
+	e.target.textContent = 'Copied!';
+	navigator.clipboard.writeText(html);
+
+	setTimeout(() => e.target.textContent = 'Get HTML', 1000);
 }

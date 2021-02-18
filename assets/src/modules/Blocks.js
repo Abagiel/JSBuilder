@@ -43,11 +43,31 @@ class ImgBlock extends Block {
 	}
 }
 
+class VideoBlock extends Block {
+	constructor(options) {
+		super({ ...options, tag: 'video' });
+	}
+
+	toHTML() {
+		const { styles, id, url } = this.options;
+		const css = toCSS(styles);
+
+		return `<video 
+			src="${url}" 
+			style="${css}" 
+			data-id="${id}"
+			autoplay
+			></video>`
+	}
+}
+
 export class CreateBlock {
 	constructor(type, options) {
 		this.options = { ...options, id: Date.now().toString() }
 		this.block = type === 'block'
 			? new SimpleBlock(this.options)
+			: type === 'video'
+			? new VideoBlock(this.options)
 			: new ImgBlock(this.options);
 	}
 
