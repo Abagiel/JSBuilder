@@ -1,5 +1,6 @@
 import { IMAGE, VIDEO } from './types.js';
 
+
 export function toCSS(s = {}) {
 	if (typeof s === 'string') return s;
 
@@ -10,14 +11,12 @@ export function fromForm(e) {
 	const data = {};
 
 	Array.from(e.target.elements).forEach(el => {
-		if (el.dataset.type === IMAGE || 
-				el.dataset.type === VIDEO) {
+		if (el.type === 'file') {
 			data['file'] = el.files[0];
 			return;
 		}
 
-		if (el.tagName === 'INPUT' ||
-				el.tagName === 'TEXTAREA') {
+		if (el.value) {
 			data[el.dataset.type] = el.value;
 		}
 	})

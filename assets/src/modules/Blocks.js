@@ -1,4 +1,5 @@
 import { toCSS } from './utils.js';
+import { _DEFAULT, VIDEO, IMAGE } from './types.js';
 
 class Block {
 	constructor(options) {
@@ -61,18 +62,19 @@ class VideoBlock extends Block {
 	}
 }
 
+const blocks = {
+	[_DEFAULT]: SimpleBlock,
+	[IMAGE]: ImgBlock,
+	[VIDEO]: VideoBlock
+}
+
 export class CreateBlock {
 	constructor(type, options) {
 		this.options = { ...options, id: Date.now().toString() }
-		this.block = type === 'block'
-			? new SimpleBlock(this.options)
-			: type === 'video'
-			? new VideoBlock(this.options)
-			: new ImgBlock(this.options);
+		this.block = new blocks[type](this.options);
 	}
 
 	toHTML() {
 		return this.block.toHTML();
-	}
-	
+	}	
 }

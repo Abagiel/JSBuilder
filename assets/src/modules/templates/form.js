@@ -1,4 +1,4 @@
-import { types, IMAGE, VIDEO, _DEFAULT } from '../types.js';
+import { IMAGE, VIDEO, _DEFAULT } from '../types.js';
 
 import { createInput, stylesField } from './inputs.js';
 import createBtn from './buttons.js';
@@ -11,7 +11,16 @@ const inputTypes = {
 	},
 
 	[IMAGE](el) {
-		return createInput('', 'file', IMAGE, !el, '.png,.jpg,.jpeg,.gif');
+		let value = '';
+
+		if (el) {
+			value = !el.src.includes('data:image') ? el.src : '';
+		}
+
+		return `
+			${createInput('', 'file', IMAGE, false, '.png,.jpg,.jpeg,.gif')}
+			${createInput(value, 'text', 'url', false)}
+		`;
 	},
 
 	[_DEFAULT](el) {
