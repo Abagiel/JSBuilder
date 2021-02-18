@@ -40,14 +40,14 @@ function multimedia(options, sb) {
 	const external = options['url'];
 
 	if (external) {
-		action(sb, options);
+		actionModel(sb, options);
 		return;
 	}
 
 	reader.onload = (e) => {
 		delete options.file;
 		options['url'] = getUrl(e) ? e.target.result : sb.selectedEl.src;
-		action(sb, options);
+		actionModel(sb, options);
 	}
 
 	reader.readAsDataURL(file);

@@ -7,7 +7,16 @@ import selectForm from './select.js';
 
 const inputTypes = {
 	[VIDEO](el) {
-		return createInput('', 'file', VIDEO, !el, '.mp4');
+		let value = '';
+
+		if (el) {
+			value = !el.src.includes('data:video') ? el.src : '';
+		}
+
+		return `
+			${createInput('', 'file', VIDEO, false, '.mp4')}
+			${createInput(value, 'text', 'url', false)}
+		`;
 	},
 
 	[IMAGE](el) {
